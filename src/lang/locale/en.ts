@@ -243,7 +243,20 @@ export default {
     `While the OpenAI API is in beta, its use is strictly limited — as such we require you use your own API key. ` +
     `You can create an OpenAI account, add a small credit (5 USD minimum), and generate your own API key. ` +
     `Once API key is set, you can use the AI tools in Excalidraw.`,
-  AI_OPENAI_TOKEN_NAME: "OpenAI API key",
+    AI_DIFY_API_URL_NAME: "Dify API URL",
+    AI_DIFY_API_URL_DESC: "Dify API URL",
+    AI_DIFY_API_URL_PLACEHOLDER: "Dify API URL",
+    AI_TTD_TOKEN_NAME: "To Diarams API key",
+    AI_TTD_TOKEN_DESC: " To Diarams API key",
+    AI_TTD_TOKEN_PLACEHOLDER: " To Diarams API key",
+    AI_TO_CODE_TOKEN_NAME: " To Code API key",
+    AI_TO_CODE_TOKEN_DESC: " To Code API key",
+    AI_TO_CODE_TOKEN_PLACEHOLDER: " To Code API key",
+    AI_TO_DESIGN_TOKEN_NAME: " To Design API key",
+    AI_TO_DESIGN_TOKEN_DESC: " To Design API key",
+    AI_TO_DESIGN_TOKEN_PLACEHOLDER: " To Design API key",
+
+    AI_OPENAI_TOKEN_NAME: "OpenAI API key",
   AI_OPENAI_TOKEN_DESC:
     "You can get your OpenAI API key from your <a href='https://platform.openai.com/api-keys'>OpenAI account</a>.",
   AI_OPENAI_TOKEN_PLACEHOLDER: "Enter your OpenAI API key here",

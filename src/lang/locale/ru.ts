@@ -210,7 +210,22 @@ export default {
     `Пока API OpenAI находится в бета-версии, его использование строго ограничено - поэтому мы требуем, чтобы вы использовали свой собственный ключ API. ` +
     `Вы можете создать аккаунт OpenAI, добавить небольшой кредит (минимум 5 долларов) и сгенерировать свой собственный ключ API. ` +
     `После установки API-ключа вы сможете использовать инструменты искусственного интеллекта в Excalidraw.`,
-  AI_OPENAI_TOKEN_NAME: "Ключ API OpenAI",
+ 
+    AI_DIFY_API_URL_NAME: "Dify API URL",
+    AI_DIFY_API_URL_DESC: "Dify API URL",
+    AI_DIFY_API_URL_PLACEHOLDER: "Dify API URL",
+    AI_TTD_TOKEN_NAME: "To Diarams API key",
+    AI_TTD_TOKEN_DESC: " To Diarams API key",
+    AI_TTD_TOKEN_PLACEHOLDER: " To Diarams API key",
+    AI_TO_CODE_TOKEN_NAME: " To Code API key",
+    AI_TO_CODE_TOKEN_DESC: " To Code API key",
+    AI_TO_CODE_TOKEN_PLACEHOLDER: " To Code API key",
+    AI_TO_DESIGN_TOKEN_NAME: " To Design API key",
+    AI_TO_DESIGN_TOKEN_DESC: " To Design API key",
+    AI_TO_DESIGN_TOKEN_PLACEHOLDER: " To Design API key",
+
+
+    AI_OPENAI_TOKEN_NAME: "Ключ API OpenAI",
   AI_OPENAI_TOKEN_DESC: "Вы можете получить свой ключ API OpenAI из вашего <a href='https://platform.openai.com/api-keys'>OpenAI аккаунта</a>.",
   AI_OPENAI_TOKEN_PLACEHOLDER: "Введите свой ключ API OpenAI здесь",
   AI_OPENAI_DEFAULT_MODEL_NAME: "Модель ИИ по умолчанию",

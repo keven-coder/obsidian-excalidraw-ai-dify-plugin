@@ -228,6 +228,34 @@ export const postOpenAI = async (request: AIRequest) : Promise<RequestUrlRespons
 
 }
 
+
+export const postTtdAI = async (request: AIRequest): Promise<any> => {
+  const plugin: ExcalidrawPlugin = window.ExcalidrawAutomate.plugin;
+  const { aiApiURL, aiTtdToken } = plugin.settings;
+
+ return await fetch(
+    `${
+      aiApiURL
+    }/v1/chat-messages`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': `Bearer ${aiTtdToken}`
+      },
+      // body: JSON.stringify({ prompt: input }),
+      body: JSON.stringify({
+        "inputs": {},
+        "stream": false,
+        "query": request.text,
+        "conversation_id": "",
+        "response_mode": "blocking",
+        "user": "alcboard"
+    }),
+    },
+  );
+}
+
 /**
  * Grabs the codeblock contents from the supplied markdown string.
  * @param markdown 

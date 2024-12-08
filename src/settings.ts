@@ -196,6 +196,13 @@ export interface ExcalidrawSettings {
   markdownNodeOneClickEditing: boolean;
   canvasImmersiveEmbed: boolean,
   startupScriptPath: string,
+  
+  aiApiURL: string,
+  aiTtdToken:string,
+  aiToCodeToken:string,
+  aiToDesignToken: string,
+
+
   openAIAPIToken: string,
   openAIDefaultTextModel: string,
   openAIDefaultVisionModel: string,
@@ -394,6 +401,13 @@ export const DEFAULT_SETTINGS: ExcalidrawSettings = {
   markdownNodeOneClickEditing: false,
   canvasImmersiveEmbed: true,
   startupScriptPath: "",
+
+  aiApiURL: '',
+  aiTtdToken: '',
+  aiToCodeToken: '',
+  aiToDesignToken: '',
+
+
   openAIAPIToken: "",
   openAIDefaultTextModel: "gpt-3.5-turbo-1106",
   openAIDefaultVisionModel: "gpt-4o",
@@ -974,6 +988,60 @@ export class ExcalidrawSettingTab extends PluginSettingTab {
       text: t("AI_HEAD"),
       cls: "excalidraw-setting-h1",
     });
+
+    
+    new Setting(detailsEl)
+    .setName(t("AI_DIFY_API_URL_NAME"))
+    .setDesc(fragWithHTML(t("AI_DIFY_API_URL_DESC")))
+    .addText((text) =>
+      text
+        .setPlaceholder(t("AI_DIFY_API_URL_PLACEHOLDER"))
+        .setValue(this.plugin.settings.aiApiURL)
+        .onChange(async (value) => {
+          this.plugin.settings.aiApiURL = value;
+          this.applySettingsUpdate();
+        }),
+    );
+    new Setting(detailsEl)
+      .setName(t("AI_TTD_TOKEN_NAME"))
+      .setDesc(fragWithHTML(t("AI_TTD_TOKEN_DESC")))
+      .addText((text) =>
+        text
+          .setPlaceholder(t("AI_TTD_TOKEN_PLACEHOLDER"))
+          .setValue(this.plugin.settings.aiTtdToken)
+          .onChange(async (value) => {
+            this.plugin.settings.aiTtdToken = value;
+            this.applySettingsUpdate();
+          }),
+      );
+      new Setting(detailsEl)
+      .setName(t("AI_TO_CODE_TOKEN_NAME"))
+      .setDesc(fragWithHTML(t("AI_TO_CODE_TOKEN_DESC")))
+      .addText((text) =>
+        text
+          .setPlaceholder(t("AI_TO_CODE_TOKEN_PLACEHOLDER"))
+          .setValue(this.plugin.settings.aiToCodeToken)
+          .onChange(async (value) => {
+            this.plugin.settings.aiToCodeToken = value;
+            this.applySettingsUpdate();
+          }),
+      );
+      new Setting(detailsEl)
+      .setName(t("AI_TO_DESIGN_TOKEN_NAME"))
+      .setDesc(fragWithHTML(t("AI_TO_DESIGN_TOKEN_NAME")))
+      .addText((text) =>
+        text
+          .setPlaceholder(t("AI_TO_DESIGN_TOKEN_PLACEHOLDER"))
+          .setValue(this.plugin.settings.aiToDesignToken)
+          .onChange(async (value) => {
+            this.plugin.settings.aiToDesignToken = value;
+            this.applySettingsUpdate();
+          }),
+      );
+
+
+
+
 
     new Setting(detailsEl)
       .setName(t("AI_OPENAI_TOKEN_NAME"))

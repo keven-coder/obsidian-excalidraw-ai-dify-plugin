@@ -141,7 +141,7 @@ import { UniversalInsertFileModal } from "./dialogs/UniversalInsertFileModal";
 import { getMermaidText, shouldRenderMermaid } from "./utils/MermaidUtils";
 import { nanoid } from "nanoid";
 import { CustomMutationObserver, DEBUGGING, debug, log} from "./utils/DebugHelper";
-import { errorHTML, extractCodeBlocks, postOpenAI } from "./utils/AIUtils";
+import { errorHTML, extractCodeBlocks, postOpenAI, postTtdAI } from "./utils/AIUtils";
 import { Mutable } from "@zsviczian/excalidraw/types/excalidraw/utility-types";
 import { SelectCard } from "./dialogs/SelectCard";
 import { Packages } from "./types/types";
@@ -5357,49 +5357,69 @@ export default class ExcalidrawView extends TextFileView implements HoverParent{
       {
         onTextSubmit: async (input:string) => {
           try {
-            const response = await postOpenAI({
-              systemPrompt: "The user will provide you with a text prompt. Your task is to generate a mermaid diagram based on the prompt. Use the graph, sequenceDiagram, flowchart or classDiagram types based on what best fits the request. Return a single message containing only the mermaid diagram in a codeblock. Avoid the use of `()` parenthesis in the mermaid script.",
+            // const response = await postOpenAI({
+            //   systemPrompt: "The user will provide you with a text prompt. Your task is to generate a mermaid diagram based on the prompt. Use the graph, sequenceDiagram, flowchart or classDiagram types based on what best fits the request. Return a single message containing only the mermaid diagram in a codeblock. Avoid the use of `()` parenthesis in the mermaid script.",
+            //   text: input,
+            //   instruction: "Return a single message containing only the mermaid diagram in a codeblock.",
+            // })
+
+            const response = await postTtdAI({
               text: input,
               instruction: "Return a single message containing only the mermaid diagram in a codeblock.",
             })
 
-            if(!response) {
-              return {
-                error: new Error("Request failed"),
-              };
+            const json = await response.json();
+
+            const generatedResponseRaw = json.answer;
+            if (!generatedResponseRaw) {
+              throw new Error("Generation failed...");
             }
+          
+            console.log("generatedResponse  ", generatedResponseRaw)
+          
+            // 截取 ```mermaid  和 ```之间的内容
+            const generatedResponse = generatedResponseRaw
+              .split("```mermaid")[1]
+              ?.split("```")[0]
+              ?.trim();
+          
 
-            const json = response.json;
-            (process.env.NODE_ENV === 'development') && DEBUGGING && debug(this.ttdDialog, `ExcalidrawView.ttdDialog > onTextSubmit, openAI response`, response);
+            // if(!response) {
+            //   return {
+            //     error: new Error("Request failed"),
+            //   };
+            // }
 
-            if (json?.error) {
-              log(response);
-              return {
-                error: new Error(json.error.message),
-              };
-            }
+            // const json = response.json;
+            // (process.env.NODE_ENV === 'development') && DEBUGGING && debug(this.ttdDialog, `ExcalidrawView.ttdDialog > onTextSubmit, openAI response`, response);
 
-            if(!json?.choices?.[0]?.message?.content) {
-              log(response);
-              return {
-                error: new Error("Generation failed... see console log for details"),
-              };
-            }
+            // if (json?.error) {
+            //   log(response);
+            //   return {
+            //     error: new Error(json.error.message),
+            //   };
+            // }
 
-            let generatedResponse = extractCodeBlocks(json.choices[0]?.message?.content)[0]?.data;
+            // if(!json?.choices?.[0]?.message?.content) {
+            //   log(response);
+            //   return {
+            //     error: new Error("Generation failed... see console log for details"),
+            //   };
+            // }
 
-            if(!generatedResponse) {
-              log(response);
-              return {
-                error: new Error("Generation failed... see console log for details"),
-              };
-            }
+            // let generatedResponse = extractCodeBlocks(json.choices[0]?.message?.content)[0]?.data;
 
-            if(generatedResponse.startsWith("mermaid")) {
-              generatedResponse = generatedResponse.replace(/^mermaid/,"").trim();
-            }
-            
-            return { generatedResponse, rateLimit:100, rateLimitRemaining:100 };
+            // if(!generatedResponse) {
+            //   log(response);
+            //   return {
+            //     error: new Error("Generation failed... see console log for details"),
+            //   };
+            // }
+
+            // if(generatedResponse.startsWith("mermaid")) {
+            //   generatedResponse = generatedResponse.replace(/^mermaid/,"").trim();
+            // }
+            return { generatedResponse,  rateLimit:100,  rateLimitRemaining:100 };
           } catch (err: any) {
             throw new Error("Request failed");
           }
