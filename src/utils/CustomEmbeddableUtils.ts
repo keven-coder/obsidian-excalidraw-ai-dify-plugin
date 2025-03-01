@@ -1,9 +1,9 @@
 import { NonDeletedExcalidrawElement } from "@zsviczian/excalidraw/types/excalidraw/element/types";
 import { DEVICE, REG_LINKINDEX_INVALIDCHARS } from "src/constants/constants";
-import { getParentOfClass } from "./ObsidianUtils";
-import { TFile, WorkspaceLeaf } from "obsidian";
-import { getLinkParts } from "./Utils";
-import ExcalidrawView from "src/ExcalidrawView";
+import { getParentOfClass } from "./obsidianUtils";
+import { App, Notice, TFile, WorkspaceLeaf } from "obsidian";
+import { getLinkParts } from "./utils";
+import ExcalidrawView from "src/view/ExcalidrawView";
 
 export const useDefaultExcalidrawFrame = (element: NonDeletedExcalidrawElement) => {
   return !(element.link.startsWith("[") || element.link.startsWith("file:") || element.link.startsWith("data:")); // && !element.link.match(TWITTER_REG);
@@ -37,7 +37,7 @@ export const processLinkText = (linkText: string, view:ExcalidrawView): { subpat
     return {subpath, file: null};
   }
 
-  const file = app.metadataCache.getFirstLinkpathDest(
+  const file = view.app.metadataCache.getFirstLinkpathDest(
     linkText,
     view.file.path,
   );
@@ -55,4 +55,19 @@ export const generateEmbeddableLink = (src: string, theme: "light" | "dark"):str
     }
   }*/
   return src;
+}
+
+export function setFileToLocalGraph(app: App, file: TFile) {
+  let lgv;
+  app.workspace.iterateAllLeaves((l) => {
+    if (l.view?.getViewType() === "localgraph") lgv = l.view;
+  });
+  try {
+    if (lgv) {
+      //@ts-ignore
+      lgv.loadFile(file);
+    }
+  } catch (e) {
+    console.error(e);
+  }
 }

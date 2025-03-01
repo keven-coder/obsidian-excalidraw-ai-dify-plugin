@@ -1,15 +1,17 @@
 import {
   DEVICE,
   FRONTMATTER_KEYS,
+  CJK_FONTS,
 } from "src/constants/constants";
 import { TAG_AUTOEXPORT, TAG_MDREADINGMODE, TAG_PDFEXPORT } from "src/constants/constSettingsTags";
-import { labelALT, labelCTRL, labelMETA, labelSHIFT } from "src/utils/ModifierkeyHelper";
+import { labelALT, labelCTRL, labelMETA, labelSHIFT } from "src/utils/modifierkeyHelper";
 
-const CJK_FONTS = "CJK Fonts";
 declare const PLUGIN_VERSION:string;
 
 // English
 export default {
+  // Sugester
+  SELECT_FILE_TO_INSERT: "Select a file to insert",
   // main.ts
   CONVERT_URL_TO_FILE: "Save image from URL to local file",
   UNZIP_CURRENT_FILE: "Decompress current Excalidraw file",
@@ -28,9 +30,10 @@ export default {
     "Script is up to date - Click to reinstall",
   OPEN_AS_EXCALIDRAW: "Open as Excalidraw Drawing",
   TOGGLE_MODE: "Toggle between Excalidraw and Markdown mode",
+  DUPLICATE_IMAGE: "Duplicate selected image with a different image ID",
   CONVERT_NOTE_TO_EXCALIDRAW: "Convert markdown note to Excalidraw Drawing",
   CONVERT_EXCALIDRAW: "Convert *.excalidraw to *.md files",
-  CREATE_NEW: "Create new drawing",
+  CREATE_NEW: "New drawing",
   CONVERT_FILE_KEEP_EXT: "*.excalidraw => *.excalidraw.md",
   CONVERT_FILE_REPLACE_EXT: "*.excalidraw => *.md (Logseq compatibility)",
   DOWNLOAD_LIBRARY: "Export stencil library as an *.excalidrawlib file",
@@ -108,6 +111,7 @@ export default {
   SELECT_LINK_TO_OPEN: "Select a link to open",
 
   //ExcalidrawView.ts
+  ERROR_CANT_READ_FILEPATH: "Error, can't read file path. Importing file instead",
   NO_SEARCH_RESULT: "Didn't find a matching element in the drawing",
   FORCE_SAVE_ABORTED: "Force Save aborted because saving is in progress",
   LINKLIST_SECOND_ORDER_LINK: "Second Order Link",
@@ -243,6 +247,7 @@ export default {
     `While the OpenAI API is in beta, its use is strictly limited — as such we require you use your own API key. ` +
     `You can create an OpenAI account, add a small credit (5 USD minimum), and generate your own API key. ` +
     `Once API key is set, you can use the AI tools in Excalidraw.`,
+
     AI_DIFY_API_URL_NAME: "Dify API URL",
     AI_DIFY_API_URL_DESC: "Dify API URL",
     AI_DIFY_API_URL_PLACEHOLDER: "Dify API URL",
@@ -256,7 +261,8 @@ export default {
     AI_TO_DESIGN_TOKEN_DESC: " To Design API key",
     AI_TO_DESIGN_TOKEN_PLACEHOLDER: " To Design API key",
 
-    AI_OPENAI_TOKEN_NAME: "OpenAI API key",
+
+  AI_OPENAI_TOKEN_NAME: "OpenAI API key",
   AI_OPENAI_TOKEN_DESC:
     "You can get your OpenAI API key from your <a href='https://platform.openai.com/api-keys'>OpenAI account</a>.",
   AI_OPENAI_TOKEN_PLACEHOLDER: "Enter your OpenAI API key here",
@@ -395,13 +401,14 @@ FILENAME_HEAD: "Filename",
     "This setting will not affect the display of the drawing when you are in Excalidraw mode or when you embed the drawing into a markdown document or when rendering hover preview.<br><ul>" +
     "<li>See other related setting for <a href='#"+TAG_PDFEXPORT+"'>PDF Export</a> under 'Embedding and Exporting' further below.</li></ul><br>" +
     "You must close the active excalidraw/markdown file and reopen it for this change to take effect.",
-  SHOW_DRAWING_OR_MD_IN_EXPORTPDF_NAME: "Render the file as an image when exporting an Excalidraw file to PDF",
+  SHOW_DRAWING_OR_MD_IN_EXPORTPDF_NAME: "Render Excalidraw as Image in Obsidian PDF Export",
   SHOW_DRAWING_OR_MD_IN_EXPORTPDF_DESC:
-    "This setting controls the behavior of Excalidraw when exporting an Excalidraw file to PDF in markdown view mode using Obsidian's <b>Export to PDF</b> feature.<br>" +
-    "<ul><li>When <b>enabled</b> the PDF will show the Excalidraw drawing only;</li>" +
-    "<li>When <b>disabled</b> the PDF will show the markdown side of the document.</li></ul>" +
-    "See the other related setting for <a href='#"+TAG_MDREADINGMODE+"'>Markdown Reading Mode</a> under 'Appearnace and Behavior' further above.<br>" +
-    "⚠️ Note, you must close the active excalidraw/markdown file and reopen for this change to take effect. ⚠️",
+    "This setting controls how Excalidraw files are exported to PDF using Obsidian's built-in <b>Export to PDF</b> feature.<br>" +
+    "<ul><li><b>Enabled:</b> The PDF will include the Excalidraw drawing as an image.</li>" +
+    "<li><b>Disabled:</b> The PDF will include the markdown content as text.</li></ul>" +
+    "Note: This setting does not affect the PDF export feature within Excalidraw itself.<br>" +
+    "See the other related setting for <a href='#"+TAG_MDREADINGMODE+"'>Markdown Reading Mode</a> under 'Appearance and Behavior' further above.<br>" +
+    "⚠️ You must close and reopen the Excalidraw/markdown file for changes to take effect. ⚠️",
   HOTKEY_OVERRIDE_HEAD: "Hotkey overrides",
   HOTKEY_OVERRIDE_DESC: `Some of the Excalidraw hotkeys such as <code>${labelCTRL()}+Enter</code> to edit text or <code>${labelCTRL()}+K</code> to create an element link ` +
     "conflict with Obsidian hotkey settings. The hotkey combinations you add below will override Obsidian's hotkey settings while useing Excalidraw, thus " +
@@ -426,6 +433,7 @@ FILENAME_HEAD: "Filename",
   ZOOM_TO_FIT_MAX_LEVEL_NAME: "Zoom to fit max ZOOM level",
   ZOOM_TO_FIT_MAX_LEVEL_DESC:
     "Set the maximum level to which zoom to fit will enlarge the drawing. Minimum is 0.5 (50%) and maximum is 10 (1000%).",
+  PEN_HEAD: "Pen",
   GRID_HEAD: "Grid",
   GRID_DYNAMIC_COLOR_NAME: "Dynamic grid color",
   GRID_DYNAMIC_COLOR_DESC:
@@ -588,7 +596,11 @@ FILENAME_HEAD: "Filename",
   EMBED_CANVAS_DESC: 
     "Hide canvas node border and background when embedding an Excalidraw drawing to Canvas. " +
     "Note that for a full transparent background for your image, you will still need to configure Excalidraw to export images with transparent background.",
-  EMBED_CACHING: "Image caching",
+  EMBED_CACHING: "Image caching and rendering optimization",
+  RENDERING_CONCURRENCY_NAME: "Image rendering concurrency",
+  RENDERING_CONCURRENCY_DESC:
+    "Number of parallel workers to use for image rendering. Increasing this number will speed up the rendering process, but may slow down the rest of the system. " +
+    "The default value is 3. You can increase this number if you have a powerful system.",
   EXPORT_SUBHEAD: "Export Settings",
   EMBED_SIZING: "Image sizing",
   EMBED_THEME_BACKGROUND: "Image theme and background color",
@@ -665,6 +677,7 @@ FILENAME_HEAD: "Filename",
   EXPORT_EMBED_SCENE_DESC:
     "Embed Excalidraw scene in exported image. Can be overridden at a file level by adding the <code>excalidraw-export-embed-scene: true/false<code> frontmatter key. " +
     "The setting only takes effect the next time you (re)open drawings.",
+  PDF_EXPORT_SETTINGS: "PDF Export Settings",
   EXPORT_HEAD: "Auto-export Settings",
   EXPORT_SYNC_NAME:
     "Keep the .SVG and/or .PNG filenames in sync with the drawing file",
@@ -724,6 +737,8 @@ FILENAME_HEAD: "Filename",
     "restart Obsidian after closing settings, for this change to take effect.",
   LATEX_DEFAULT_NAME: "Default LaTeX formula for new equations",
   LATEX_DEFAULT_DESC: "Leave empty if you don't want a default formula. You can add default formatting here such as <code>\\color{white}</code>.",
+  LATEX_PREAMBLE_NAME: "LaTeX preamble file (CasE SEnSiTivE!)",
+  LATEX_PREAMBLE_DESC: "Full filepath to the preamble file, leave empty for default. If the file doesn't exist this option will be ignored.<br><strong>Important:</strong> Requires obsidian reload after change to take effect!",
   NONSTANDARD_HEAD: "Non-Excalidraw.com supported features",
   NONSTANDARD_DESC: `These settings in the "Non-Excalidraw.com Supported Features" section provide customization options beyond the default Excalidraw.com features. These features are not available on excalidraw.com. When exporting the drawing to Excalidraw.com these features will appear different.
     You can configure the number of custom pens displayed next to the Obsidian Menu on the canvas, allowing you to choose from a range of options. Additionally, you can enable a local font option, which adds a local font to the list of fonts on the element properties panel for text elements. `,
@@ -920,6 +935,8 @@ FILENAME_HEAD: "Filename",
   ES_YOUTUBE_START_INVALID: "The YouTube Start Time is invalid. Please check the format and try again",
   ES_FILENAME_VISIBLE: "Filename Visible",
   ES_BACKGROUND_HEAD: "Embedded note background color",
+  ES_BACKGROUND_DESC_INFO: "Click here for more info on colors",
+  ES_BACKGROUND_DESC_DETAIL: "Background color affects only the preview mode of the markdown embeddable. When editing, it follows the Obsidian light/dark theme as set for the scene (via document property) or in plugin settings. The background color has two layers: the element background color (lower layer) and a color on top (upper layer). Selecting 'Match Element Background' means both layers follow the element color. Selecting 'Match Canvas' or a specific background color keeps the element background layer. Setting opacity (e.g., 50%) mixes the canvas or selected color with the element background color. To remove the element background layer, set the element color to transparent in Excalidraw's element properties editor. This makes only the upper layer effective.",
   ES_BACKGROUND_MATCH_ELEMENT: "Match Element Background Color",
   ES_BACKGROUND_MATCH_CANVAS: "Match Canvas Background Color",
   ES_BACKGROUND_COLOR: "Background Color",
@@ -982,4 +999,115 @@ FILENAME_HEAD: "Filename",
   //Utils.ts
   UPDATE_AVAILABLE: `A newer version of Excalidraw is available in Community Plugins.\n\nYou are using ${PLUGIN_VERSION}.\nThe latest is`,
   ERROR_PNG_TOO_LARGE: "Error exporting PNG - PNG too large, try a smaller resolution",
+
+  //modifierkeyHelper.ts
+  // WebBrowserDragAction
+  WEB_DRAG_IMPORT_IMAGE: "Import Image to Vault",
+  WEB_DRAG_IMAGE_URL: "Insert Image or YouTube Thumbnail with URL",
+  WEB_DRAG_LINK: "Insert Link", 
+  WEB_DRAG_EMBEDDABLE: "Insert Interactive-Frame",
+
+  // LocalFileDragAction
+  LOCAL_DRAG_IMPORT: "Import external file or reuse existing file if path is from the Vault",
+  LOCAL_DRAG_IMAGE: "Insert Image: with local URI or internal-link if from Vault",
+  LOCAL_DRAG_LINK: "Insert Link: local URI or internal-link if from Vault",
+  LOCAL_DRAG_EMBEDDABLE: "Insert Interactive-Frame: local URI or internal-link if from Vault",
+
+  // InternalDragAction  
+  INTERNAL_DRAG_IMAGE: "Insert Image",
+  INTERNAL_DRAG_IMAGE_FULL: "Insert Image @100%",
+  INTERNAL_DRAG_LINK: "Insert Link",
+  INTERNAL_DRAG_EMBEDDABLE: "Insert Interactive-Frame",
+
+  // LinkClickAction
+  LINK_CLICK_ACTIVE: "Open in current active window",
+  LINK_CLICK_NEW_PANE: "Open in a new adjacent window",
+  LINK_CLICK_POPOUT: "Open in a popout window",
+  LINK_CLICK_NEW_TAB: "Open in a new tab",
+  LINK_CLICK_MD_PROPS: "Show the Markdown image-properties dialog (only relevant if you have embedded a markdown document as an image)",
+
+  //ExportDialog
+  // Dialog and tabs
+  EXPORTDIALOG_TITLE: "Export Drawing",
+  EXPORTDIALOG_TAB_IMAGE: "Image",
+  EXPORTDIALOG_TAB_PDF: "PDF",
+  // Settings persistence
+  EXPORTDIALOG_SAVE_SETTINGS: "Save image settings to file doc.properties?",
+  EXPORTDIALOG_SAVE_SETTINGS_SAVE: "Save as preset",
+  EXPORTDIALOG_SAVE_SETTINGS_ONETIME: "One-time use",
+  // Image settings
+  EXPORTDIALOG_IMAGE_SETTINGS: "Image",
+  EXPORTDIALOG_IMAGE_DESC: "PNG supports transparency. External files can include Excalidraw scene data.",
+  EXPORTDIALOG_PADDING: "Padding",
+  EXPORTDIALOG_SCALE: "Scale",
+  EXPORTDIALOG_CURRENT_PADDING: "Current padding:",
+  EXPORTDIALOG_SIZE_DESC: "Scale affects output size",
+  EXPORTDIALOG_SCALE_VALUE: "Scale:",
+  EXPORTDIALOG_IMAGE_SIZE: "Size:",
+  // Theme and background
+  EXPORTDIALOG_EXPORT_THEME: "Theme",
+  EXPORTDIALOG_THEME_LIGHT: "Light",
+  EXPORTDIALOG_THEME_DARK: "Dark",
+  EXPORTDIALOG_BACKGROUND: "Background",
+  EXPORTDIALOG_BACKGROUND_TRANSPARENT: "Transparent",
+  EXPORTDIALOG_BACKGROUND_USE_COLOR: "Use scene color",
+  // Selection
+  EXPORTDIALOG_SELECTED_ELEMENTS: "Export",
+  EXPORTDIALOG_SELECTED_ALL: "Entire scene",
+  EXPORTDIALOG_SELECTED_SELECTED: "Selection only",
+  // Export options
+  EXPORTDIALOG_EMBED_SCENE: "Include scene data?",
+  EXPORTDIALOG_EMBED_YES: "Yes",
+  EXPORTDIALOG_EMBED_NO: "No",
+  // PDF settings
+  EXPORTDIALOG_PDF_SETTINGS: "PDF",
+  EXPORTDIALOG_PAGE_SIZE: "Size",
+  EXPORTDIALOG_PAGE_ORIENTATION: "Orientation",
+  EXPORTDIALOG_ORIENTATION_PORTRAIT: "Portrait",
+  EXPORTDIALOG_ORIENTATION_LANDSCAPE: "Landscape",
+  EXPORTDIALOG_PDF_FIT_TO_PAGE: "Page Fitting",
+  EXPORTDIALOG_PDF_FIT_OPTION: "Fit to page",
+  EXPORTDIALOG_PDF_FIT_2_OPTION: "Fit to max 2-pages",
+  EXPORTDIALOG_PDF_FIT_4_OPTION: "Fit to max 4-pages",
+  EXPORTDIALOG_PDF_FIT_6_OPTION: "Fit to max 6-pages",
+  EXPORTDIALOG_PDF_FIT_8_OPTION: "Fit to max 8-pages",
+  EXPORTDIALOG_PDF_FIT_12_OPTION: "Fit to max 12-pages",
+  EXPORTDIALOG_PDF_FIT_16_OPTION: "Fit to max 16-pages",
+  EXPORTDIALOG_PDF_SCALE_OPTION: "Use image scale (may span multiple pages)",
+  EXPORTDIALOG_PDF_PAPER_COLOR: "Paper Color",
+  EXPORTDIALOG_PDF_PAPER_WHITE: "White",
+  EXPORTDIALOG_PDF_PAPER_SCENE: "Use scene color",
+  EXPORTDIALOG_PDF_PAPER_CUSTOM: "Custom color",
+  EXPORTDIALOG_PDF_ALIGNMENT: "Position on Page",
+  EXPORTDIALOG_PDF_ALIGN_CENTER: "Center",
+  EXPORTDIALOG_PDF_ALIGN_CENTER_LEFT: "Center Left",
+  EXPORTDIALOG_PDF_ALIGN_CENTER_RIGHT: "Center Right",
+  EXPORTDIALOG_PDF_ALIGN_TOP_LEFT: "Top Left",
+  EXPORTDIALOG_PDF_ALIGN_TOP_CENTER: "Top Center", 
+  EXPORTDIALOG_PDF_ALIGN_TOP_RIGHT: "Top Right",
+  EXPORTDIALOG_PDF_ALIGN_BOTTOM_LEFT: "Bottom Left",
+  EXPORTDIALOG_PDF_ALIGN_BOTTOM_CENTER: "Bottom Center",
+  EXPORTDIALOG_PDF_ALIGN_BOTTOM_RIGHT: "Bottom Right",
+  EXPORTDIALOG_PDF_MARGIN: "Margin",
+  EXPORTDIALOG_PDF_MARGIN_NONE: "None",
+  EXPORTDIALOG_PDF_MARGIN_TINY: "Small",
+  EXPORTDIALOG_PDF_MARGIN_NORMAL: "Normal",
+  EXPORTDIALOG_SAVE_PDF_SETTINGS: "Save PDF settings",
+  EXPORTDIALOG_SAVE_CONFIRMATION: "PDF config saved to plugin settings as default",
+  // Buttons
+  EXPORTDIALOG_PNGTOFILE : "Export PNG",
+  EXPORTDIALOG_SVGTOFILE : "Export SVG",
+  EXPORTDIALOG_PNGTOVAULT : "PNG to Vault",
+  EXPORTDIALOG_SVGTOVAULT : "SVG to Vault",
+  EXPORTDIALOG_EXCALIDRAW: "Excalidraw",
+  EXPORTDIALOG_PNGTOCLIPBOARD : "PNG to Clipboard",
+  EXPORTDIALOG_SVGTOCLIPBOARD : "SVG to Clipboard",
+  EXPORTDIALOG_PDF: "Export PDF",
+
+  EXPORTDIALOG_PDF_PROGRESS_NOTICE: "Exporting PDF. If this image is large, it may take a while.",
+  EXPORTDIALOG_PDF_PROGRESS_DONE: "Export complete",
+  EXPORTDIALOG_PDF_PROGRESS_ERROR: "Error exporting PDF, check developer console for details",
+
+  //exportUtils.ts
+  PDF_EXPORT_DESKTOP_ONLY: "PDF export is only available on desktop",
 };

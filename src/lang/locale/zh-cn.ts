@@ -1,15 +1,17 @@
 import {
   DEVICE,
   FRONTMATTER_KEYS,
+  CJK_FONTS
 } from "src/constants/constants";
 import { TAG_AUTOEXPORT, TAG_MDREADINGMODE, TAG_PDFEXPORT } from "src/constants/constSettingsTags";
-import { labelALT, labelCTRL, labelMETA, labelSHIFT } from "src/utils/ModifierkeyHelper";
+import { labelALT, labelCTRL, labelMETA, labelSHIFT } from "src/utils/modifierkeyHelper";
 
-const CJK_FONTS = "CJK Fonts";
 declare const PLUGIN_VERSION:string;
 
 // 简体中文
 export default {
+  // Sugester
+  SELECT_FILE_TO_INSERT: "选择一个要插入的文件",
   // main.ts
   CONVERT_URL_TO_FILE: "从 URL 下载图像到本地",
   UNZIP_CURRENT_FILE: "解压当前 Excalidraw 文件",
@@ -28,6 +30,7 @@ export default {
     "脚本已是最新 - 点击重新安装",
   OPEN_AS_EXCALIDRAW: "打开为 Excalidraw 绘图",
   TOGGLE_MODE: "在 Excalidraw 和 Markdown 模式之间切换",
+  DUPLICATE_IMAGE : "复制选定的图像，并分配一个不同的图像 ID",
   CONVERT_NOTE_TO_EXCALIDRAW: "转换：空白 Markdown 文档 => Excalidraw 绘图文件",
   CONVERT_EXCALIDRAW: "转换： *.excalidraw => *.md",
   CREATE_NEW: "新建绘图文件",
@@ -108,6 +111,7 @@ export default {
   SELECT_LINK_TO_OPEN: "选择要打开的链接",
 
   //ExcalidrawView.ts
+  ERROR_CANT_READ_FILEPATH : "错误，无法读取文件路径。正在改为导入文件",
   NO_SEARCH_RESULT: "在绘图中未找到匹配的元素",
   FORCE_SAVE_ABORTED: "自动保存被中止，因为文件正在保存中",
   LINKLIST_SECOND_ORDER_LINK: "二级链接",
@@ -193,7 +197,7 @@ export default {
   NEWVERSION_NOTIFICATION_DESC:
       "<b>开启：</b>当本插件存在可用更新时，显示通知。<br>" +
       "<b>关闭：</b>您需要手动检查本插件的更新（设置 - 第三方插件 - 检查更新）。",
-  
+
   BASIC_HEAD: "基本",
   BASIC_DESC: `包括：更新说明，更新提示，新绘图文件、模板文件、脚本文件的存储路径等的设置。`,
   FOLDER_NAME: "Excalidraw 文件夹（區分大小寫！）",
@@ -245,6 +249,7 @@ export default {
     `然后就可以在 Excalidraw 中配置并使用 AI。`,
 
 
+    
   AI_DIFY_API_URL_NAME: "Dify API URL",
   AI_DIFY_API_URL_DESC: "Dify API URL",
   AI_DIFY_API_URL_PLACEHOLDER: "Dify API URL",
@@ -258,6 +263,7 @@ export default {
   AI_TO_DESIGN_TOKEN_DESC: " To Design API key",
   AI_TO_DESIGN_TOKEN_PLACEHOLDER: " To Design API key",
 
+  
   AI_OPENAI_TOKEN_NAME: "OpenAI API key",
   AI_OPENAI_TOKEN_DESC:
     "您可以访问您的<a href='https://platform.openai.com/api-keys'> OpenAI 账户</a>来获取自己的 OpenAI API key。",
@@ -397,13 +403,14 @@ FILENAME_HEAD: "文件名",
     "此设置不会影响您在 Excalidraw 模式下的绘图显示，或者在将绘图嵌入 Markdown 文档时，或在渲染悬停预览时。<br><ul>" +
     "<li>请参阅下面‘嵌入和导出’部分的 <a href='#"+TAG_PDFEXPORT+"'>PDF 导出</a> 相关设置。</li></ul><br>" +
     "您必须关闭当前的 Excalidraw/Markdown 文件并重新打开，以使此更改生效。",
-  SHOW_DRAWING_OR_MD_IN_EXPORTPDF_NAME: "在将 Excalidraw 文件导出为 PDF 时将文件渲染为图像",
+  SHOW_DRAWING_OR_MD_IN_EXPORTPDF_NAME : "在 Obsidian 中导出为 PDF 格式时将 Excalidraw 渲染为图像" ,
   SHOW_DRAWING_OR_MD_IN_EXPORTPDF_DESC:
-    "处于 Markdown 视图模式时，此设置控制 Excalidraw 在使用 Obsidian 的 <b>导出为 PDF</b> 功能时，将 Excalidraw 文件导出为 PDF 的行为。<br>" +
-    "<ul><li>当 <b>启用</b> 时，PDF 将仅显示 Excalidraw 绘图；</li>" +
-    "<li>当 <b>禁用</b> 时，PDF 将显示文档的 Markdown 部分（背景笔记）。</li></ul>" +
-    "请参阅上面‘外观和行为’部分的 <<a href='#"+TAG_MDREADINGMODE+"'>>Markdown 阅读模式</a> 相关设置。" +
-    "⚠️ 注意，您必须关闭当前的 Excalidraw/Markdown 文件并重新打开，以使此更改生效。⚠️",
+    "此设置控制在使用 Obsidian 内置的<b>导出为 PDF</b>功能，如何将 Excalidraw 文件导出为 PDF。<br>" +
+    "<ul><li><b>启用：</b>PDF 将包含图像格式的 Excalidraw 绘图。</li>" +
+    "<li><b>禁用：</b>PDF 将包含作为文本的 Markdown 内容。</li></ul>" +
+    "注意：此设置不会影响 Excalidraw 本身的 PDF 导出功能。<br>" +
+    "请参阅上方“外观和行为”部分中与<a href='#" + TAG_MDREADINGMODE + "'>Markdown 阅读模式</a>相关的其他设置。<br>" +
+    "⚠️ 您必须关闭并重新打开 Excalidraw/Markdown 文件，设置更改才会生效。⚠️",
   HOTKEY_OVERRIDE_HEAD: "热键覆盖",
   HOTKEY_OVERRIDE_DESC: `一些 Excalidraw 的热键，例如 ${labelCTRL()}+Enter 用于编辑文本，或 ${labelCTRL()}+K 用于创建元素链接。` +
     "与 Obsidian 的热键设置发生冲突。您在下面添加的热键组合将在使用 Excalidraw 时覆盖 Obsidian 的热键设置，" +
@@ -418,7 +425,7 @@ FILENAME_HEAD: "文件名",
   DEFAULT_WHEELZOOM_NAME: "鼠标滚轮缩放页面",
   DEFAULT_WHEELZOOM_DESC:
     `<b>开启：</b>鼠标滚轮为缩放页面，${labelCTRL()}+鼠标滚轮为滚动页面</br><b>关闭：</b>鼠标滚轮为滚动页面，${labelCTRL()}+鼠标滚轮为缩放页面`,
-    
+
   ZOOM_TO_FIT_NAME: "调节面板尺寸后自动缩放页面",
   ZOOM_TO_FIT_DESC: "调节面板尺寸后，自适应地缩放页面" +
     "<br><b>开启：</b>自动缩放。<br><b>关闭：</b>禁用自动缩放。",
@@ -428,6 +435,7 @@ FILENAME_HEAD: "文件名",
   ZOOM_TO_FIT_MAX_LEVEL_NAME: "自动缩放的最高级别",
   ZOOM_TO_FIT_MAX_LEVEL_DESC:
     "自动缩放画布时，允许放大的最高级别。该值不能低于 0.5（50%）且不能超过 10（1000%）。",
+  PEN_HEAD: "手写笔",
   GRID_HEAD: "网格",
   GRID_DYNAMIC_COLOR_NAME: "动态网格颜色",
   GRID_DYNAMIC_COLOR_DESC:
@@ -587,10 +595,14 @@ FILENAME_HEAD: "文件名",
     此外，还有自动导出 SVG 或 PNG 文件并保持与绘图文件状态同步的设置。`,
   EMBED_CANVAS: "Obsidian 白板支持",
   EMBED_CANVAS_NAME: "沉浸式嵌入",
-  EMBED_CANVAS_DESC: 
+  EMBED_CANVAS_DESC:
     "当嵌入绘图到 Obsidian 白板中时，隐藏元素的边界和背景。" +
     "注意：如果想要背景完全透明，您依然需要在 Excalidraw 中设置“导出的图像不包含背景”。",
-  EMBED_CACHING: "预览图缓存",
+  EMBED_CACHING : "图像缓存和渲染优化" ,
+  RENDERING_CONCURRENCY_NAME : "图像渲染并发性" ,
+  RENDERING_CONCURRENCY_DESC :
+    "用于图像渲染的并行工作线程数。增加此数值可以加快渲染速度，但可能会减慢系统的其他部分运行速度。" +
+    "默认值为 3。如果您的系统性能强大，可以增加此数值。" ,
   EXPORT_SUBHEAD: "导出",
   EMBED_SIZING: "图像尺寸",
   EMBED_THEME_BACKGROUND: "图像的主题和背景色",
@@ -598,7 +610,7 @@ FILENAME_HEAD: "文件名",
   EMBED_IMAGE_CACHE_DESC: "可提高下次嵌入的速度。" +
     "但如果绘图中又嵌入了子绘图，当子绘图改变时，您需要打开子绘图并手动保存，才能够更新父绘图的预览图。",
   SCENE_IMAGE_CACHE_NAME: "缓存场景中嵌套的 Excalidraw",
-  SCENE_IMAGE_CACHE_DESC: "缓存场景中嵌套的 Excalidraw 以加快场景渲染速度。这将加快渲染过程，特别是在您的场景中有深度嵌套的 Excalidraw 时。" + 
+  SCENE_IMAGE_CACHE_DESC: "缓存场景中嵌套的 Excalidraw 以加快场景渲染速度。这将加快渲染过程，特别是在您的场景中有深度嵌套的 Excalidraw 时。" +
     "Excalidraw 将智能地尝试识别嵌套 Excalidraw 的子元素是否发生变化，并更新缓存。 " +
     "如果您怀疑缓存未能正确更新，您可能需要关闭此功能。",
   EMBED_IMAGE_CACHE_CLEAR: "清除缓存",
@@ -642,7 +654,7 @@ FILENAME_HEAD: "文件名",
     "如果您选择了 PNG 或 SVG 副本，当副本不存在时，该命令将会插入一条损坏的链接，您需要打开绘图文件并手动导出副本才能修复 —— " +
     "也就是说，该选项不会自动帮您生成 PNG/SVG 副本，而只会引用已有的 PNG/SVG 副本。",
   EMBED_MARKDOWN_COMMENT_NAME: "将链接作为注释嵌入",
-  EMBED_MARKDOWN_COMMENT_DESC: 
+  EMBED_MARKDOWN_COMMENT_DESC:
     "在图像下方以 Markdown 链接的形式嵌入原始 Excalidraw 文件的链接，例如：<code>%%[[drawing.excalidraw]]%%</code>。<br>" +
     "除了添加 Markdown 注释之外，您还可以选择嵌入的 SVG 或 PNG，并使用命令面板：" +
     "'<code>Excalidraw: 打开 Excalidraw 绘图</code>'来打开该绘图",
@@ -667,6 +679,7 @@ FILENAME_HEAD: "文件名",
   EXPORT_EMBED_SCENE_DESC:
     "在导出的图像中嵌入 Excalidraw 场景。可以通过在文件级别添加 <code>excalidraw-export-embed-scene: true/false</code> frontmatter 元数据键来覆盖此设置。" +
     "此设置仅在您下次(重新)打开绘图时生效。",
+  PDF_EXPORT_SETTINGS : "PDF 导出设置",
   EXPORT_HEAD: "导出设置",
   EXPORT_SYNC_NAME:
     "保持 SVG/PNG 文件名与绘图文件同步",
@@ -721,7 +734,7 @@ FILENAME_HEAD: "文件名",
     "文件浏览器等创建的绘图都将是旧格式（*.excalidraw）。" +
     "此外，您打开旧格式绘图文件时将不再收到警告消息。",
   MATHJAX_NAME: "MathJax (LaTeX) 的 javascript 库服务器",
-  MATHJAX_DESC: "如果您在绘图中使用 LaTeX，插件需要从服务器获取并加载一个 javascript 库。" + 
+  MATHJAX_DESC: "如果您在绘图中使用 LaTeX，插件需要从服务器获取并加载一个 javascript 库。" +
     "如果您的网络无法访问某些库服务器，可以尝试通过此选项更换库服务器。"+
     "更改此选项后，您可能需要重启 Obsidian 来使其生效。",
   LATEX_DEFAULT_NAME: "插入 LaTeX 时的默认表达式",
@@ -740,7 +753,7 @@ FILENAME_HEAD: "文件名",
   EXPERIMENTAL_HEAD: "杂项",
   EXPERIMENTAL_DESC: `包括：默认的 LaTeX 公式，字段建议，绘图文件的类型标识符，OCR 等设置。`,
   EA_HEAD: "Excalidraw 自动化",
-  EA_DESC: 
+  EA_DESC:
     "ExcalidrawAutomate 是用于 Excalidraw 自动化脚本的 API，但是目前说明文档还不够完善，" +
     "建议阅读 <a href='https://github.com/zsviczian/obsidian-excalidraw-plugin/blob/master/docs/API/ExcalidrawAutomate.d.ts'>ExcalidrawAutomate.d.ts</a> 文件源码，" +
     "参考 <a href='https://zsviczian.github.io/obsidian-excalidraw-plugin/'>ExcalidrawAutomate How-to</a> 网页（不过该网页" +
@@ -803,7 +816,7 @@ FILENAME_HEAD: "文件名",
   CJK_ASSETS_FOLDER_NAME: "CJK 字体文件夹（區分大小寫！）",
   CJK_ASSETS_FOLDER_DESC: `您可以在此设置 CJK 字体文件夹的位置。例如，您可以选择将其放置在 <code>Excalidraw/CJK Fonts</code> 下。<br><br>
     <strong>重要：</strong> 请勿将此文件夹设置为 Vault 根目录！请勿在此文件夹中放置其他字体。<br><br>
-    <strong>注意：</strong> 如果您使用 Obsidian Sync 并希望在设备之间同步这些字体文件，请确保 Obsidian Sync 设置为同步“所有其他文件类型”。`, 
+    <strong>注意：</strong> 如果您使用 Obsidian Sync 并希望在设备之间同步这些字体文件，请确保 Obsidian Sync 设置为同步“所有其他文件类型”。`,
   LOAD_CHINESE_FONTS_NAME: "启动时从文件加载中文字体",
   LOAD_JAPANESE_FONTS_NAME: "启动时从文件加载日文字体",
   LOAD_KOREAN_FONTS_NAME: "启动时从文件加载韩文字体",
@@ -818,7 +831,7 @@ FILENAME_HEAD: "文件名",
   TASKBONE_ENABLE_DESC: "启用意味着您同意 Taskbone <a href='https://www.taskbone.com/legal/terms/' target='_blank'>条款及细则</a> 以及 " +
     "<a href='https://www.taskbone.com/legal/privacy/' target='_blank'>隐私政策</a>。",
   TASKBONE_APIKEY_NAME: "Taskbone API Key",
-  TASKBONE_APIKEY_DESC: "Taskbone 的免费 API key 提供了一定数量的每月识别次数。如果您非常频繁地使用此功能，或者想要支持 " + 
+  TASKBONE_APIKEY_DESC: "Taskbone 的免费 API key 提供了一定数量的每月识别次数。如果您非常频繁地使用此功能，或者想要支持 " +
     "Taskbone 的开发者（您懂的，没有人能用爱发电，Taskbone 开发者也需要投入资金来维持这项 OCR 服务）您可以" +
     "到 <a href='https://www.taskbone.com/' target='_blank'>taskbone.com</a> 购买一个商用 API key。购买后请将它填写到旁边这个文本框里，替换掉原本自动生成的免费 API key。",
 
@@ -922,6 +935,8 @@ FILENAME_HEAD: "文件名",
   ES_YOUTUBE_START_INVALID: "YouTube 起始时间无效。请检查格式并重试",
   ES_FILENAME_VISIBLE: "显示文件名",
   ES_BACKGROUND_HEAD: "背景色",
+  ES_BACKGROUND_DESC_INFO : "点击此处了解更多颜色信息" ,
+  ES_BACKGROUND_DESC_DETAIL : "背景颜色仅影响 Markdown 嵌入预览模式。在编辑模式下，它会根据场景（通过文档属性设置）或插件设置，遵循 Obsidian 的浅色/深色主题。背景颜色有两层：元素背景颜色（下层）和上层颜色。选择“匹配元素背景”意味着两层都遵循元素颜色。选择“匹配画布”或特定背景颜色时，保留元素背景层。设置透明度（例如 50%）会将画布或选定的颜色与元素背景颜色混合。要移除元素背景层，可以在 Excalidraw 的元素属性编辑器中将元素颜色设置为透明，这样只有上层颜色生效。" ,
   ES_BACKGROUND_MATCH_ELEMENT: "匹配元素背景色",
   ES_BACKGROUND_MATCH_CANVAS: "匹配画布背景色",
   ES_BACKGROUND_COLOR: "背景色",
@@ -984,4 +999,112 @@ FILENAME_HEAD: "文件名",
   //Utils.ts
   UPDATE_AVAILABLE: `Excalidraw 的新版本已在社区插件中可用。\n\n您正在使用 ${PLUGIN_VERSION}。\n最新版本是`,
   ERROR_PNG_TOO_LARGE: "导出 PNG 时出错 - PNG 文件过大，请尝试较小的分辨率",
+
+  // ModifierkeyHelper.ts
+  // WebBrowserDragAction
+  WEB_DRAG_IMPORT_IMAGE : "导入图片到 Vault" ,
+  WEB_DRAG_IMAGE_URL : "通过 URL 插入图片或 YouTube 缩略图" ,
+  WEB_DRAG_LINK : "插入链接" ,
+  WEB_DRAG_EMBEDDABLE : "插入交互框架" ,
+
+  // LocalFileDragAction
+  LOCAL_DRAG_IMPORT : "导入外部文件，或在路径来自 Vault 时复用现有文件" ,
+  LOCAL_DRAG_IMAGE : "插入图片：使用本地 URI，或在路径来自 Vault 时使用内部链接" ,
+  LOCAL_DRAG_LINK : "插入链接：使用本地 URI，或在路径来自 Vault 时使用内部链接" ,
+  LOCAL_DRAG_EMBEDDABLE : "插入交互框架：使用本地 URI，或在路径来自 Vault 时使用内部链接" ,
+
+  // InternalDragAction
+  INTERNAL_DRAG_IMAGE : "插入图片" ,
+  INTERNAL_DRAG_IMAGE_FULL : "插入图片（100% 尺寸）" ,
+  INTERNAL_DRAG_LINK : "插入链接" ,
+  INTERNAL_DRAG_EMBEDDABLE : "插入交互框架" ,
+
+  // LinkClickAction
+  LINK_CLICK_ACTIVE : "在当前活动窗口中打开" ,
+  LINK_CLICK_NEW_PANE : "在相邻的新窗口中打开" ,
+  LINK_CLICK_POPOUT : "在弹出窗口中打开" ,
+  LINK_CLICK_NEW_TAB : "在新标签页中打开" ,
+  LINK_CLICK_MD_PROPS : "显示 Markdown 图片属性对话框（仅在嵌入 Markdown 文档为图片时适用）" ,
+
+// 导出对话框
+// 对话框和标签页
+EXPORTDIALOG_TITLE : "导出图形",
+EXPORTDIALOG_TAB_IMAGE : "图像",
+EXPORTDIALOG_TAB_PDF : "PDF",
+// 设置持久化
+EXPORTDIALOG_SAVE_SETTINGS : "将图像设置保存到文件 doc.properties 吗？",
+EXPORTDIALOG_SAVE_SETTINGS_SAVE : "保存为预设",
+EXPORTDIALOG_SAVE_SETTINGS_ONETIME : "仅本次使用",
+// 图像设置
+EXPORTDIALOG_IMAGE_SETTINGS : "图像",
+EXPORTDIALOG_IMAGE_DESC : "PNG 支持透明。外部文件可以包含 Excalidraw 场景数据。",
+EXPORTDIALOG_PADDING : "边距",
+EXPORTDIALOG_SCALE : "缩放",
+EXPORTDIALOG_CURRENT_PADDING : "当前边距：",
+EXPORTDIALOG_SIZE_DESC : "缩放会影响输出大小",
+EXPORTDIALOG_SCALE_VALUE : "缩放：",
+EXPORTDIALOG_IMAGE_SIZE : "大小：",
+// 主题和背景
+EXPORTDIALOG_EXPORT_THEME : "主题",
+EXPORTDIALOG_THEME_LIGHT : "浅色",
+EXPORTDIALOG_THEME_DARK : "深色",
+EXPORTDIALOG_BACKGROUND : "背景",
+EXPORTDIALOG_BACKGROUND_TRANSPARENT : "透明",
+EXPORTDIALOG_BACKGROUND_USE_COLOR : "使用场景颜色",
+// 选择
+EXPORTDIALOG_SELECTED_ELEMENTS : "导出",
+EXPORTDIALOG_SELECTED_ALL : "整个场景",
+EXPORTDIALOG_SELECTED_SELECTED : "仅选中部分",
+// 导出选项
+EXPORTDIALOG_EMBED_SCENE : "包含场景数据吗？",
+EXPORTDIALOG_EMBED_YES : "是",
+EXPORTDIALOG_EMBED_NO : "否",
+// PDF 设置
+EXPORTDIALOG_PDF_SETTINGS : "PDF",
+EXPORTDIALOG_PAGE_SIZE : "页面大小",
+EXPORTDIALOG_PAGE_ORIENTATION : "方向",
+EXPORTDIALOG_ORIENTATION_PORTRAIT : "纵向",
+EXPORTDIALOG_ORIENTATION_LANDSCAPE : "横向",
+EXPORTDIALOG_PDF_DPI : "图像质量 [DPI]",
+EXPORTDIALOG_PDF_FIT_TO_PAGE : "页面适配",
+EXPORTDIALOG_PDF_FIT_OPTION : "适配页面",
+EXPORTDIALOG_PDF_FIT_2_OPTION : "适配至 2 页" ,
+EXPORTDIALOG_PDF_FIT_4_OPTION : "适配至 4 页" ,
+EXPORTDIALOG_PDF_FIT_6_OPTION : "适配至 6 页" ,
+EXPORTDIALOG_PDF_FIT_8_OPTION : "适配至 8 页" ,
+EXPORTDIALOG_PDF_FIT_12_OPTION : "适配至 12 页" ,
+EXPORTDIALOG_PDF_FIT_16_OPTION : "适配至 16 页" ,
+EXPORTDIALOG_PDF_SCALE_OPTION : "使用图像缩放（可能跨多页）",
+EXPORTDIALOG_PDF_PAPER_COLOR : "纸张颜色",
+EXPORTDIALOG_PDF_PAPER_WHITE : "白色",
+EXPORTDIALOG_PDF_PAPER_SCENE : "使用场景颜色",
+EXPORTDIALOG_PDF_PAPER_CUSTOM : "自定义颜色",
+EXPORTDIALOG_PDF_ALIGNMENT : "页面位置",
+EXPORTDIALOG_PDF_ALIGN_CENTER : "居中",
+EXPORTDIALOG_PDF_ALIGN_TOP_LEFT : "左上角",
+EXPORTDIALOG_PDF_ALIGN_TOP_CENTER : "顶部居中",
+EXPORTDIALOG_PDF_ALIGN_TOP_RIGHT : "右上角",
+EXPORTDIALOG_PDF_ALIGN_BOTTOM_LEFT : "左下角",
+EXPORTDIALOG_PDF_ALIGN_BOTTOM_CENTER : "底部居中",
+EXPORTDIALOG_PDF_ALIGN_BOTTOM_RIGHT : "右下角",
+EXPORTDIALOG_PDF_MARGIN : "边距",
+EXPORTDIALOG_PDF_MARGIN_NONE : "无",
+EXPORTDIALOG_PDF_MARGIN_TINY : "小",
+EXPORTDIALOG_PDF_MARGIN_NORMAL : "正常",
+EXPORTDIALOG_SAVE_PDF_SETTINGS : "保存 PDF 设置",
+EXPORTDIALOG_SAVE_CONFIRMATION : "PDF 配置已保存为插件默认设置",
+// 按钮
+EXPORTDIALOG_PNGTOFILE : "导出 PNG 文件",
+EXPORTDIALOG_SVGTOFILE : "导出 SVG 文件",
+EXPORTDIALOG_PNGTOVAULT : "PNG 保存到 Vault",
+EXPORTDIALOG_SVGTOVAULT : "SVG 保存到 Vault",
+EXPORTDIALOG_EXCALIDRAW : "Excalidraw",
+EXPORTDIALOG_PNGTOCLIPBOARD : "PNG 复制到剪贴板",
+EXPORTDIALOG_SVGTOCLIPBOARD : "SVG 复制到剪贴板",
+EXPORTDIALOG_PDF : "导出 PDF 文件",
+EXPORTDIALOG_PDFTOVAULT : "PDF 保存到 Vault",
+
+EXPORTDIALOG_PDF_PROGRESS_NOTICE : "正在导出页面" ,
+EXPORTDIALOG_PDF_PROGRESS_IMAGE : "的图像" ,
+EXPORTDIALOG_PDF_PROGRESS_DONE : "导出完成" ,
 };

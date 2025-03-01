@@ -1,17 +1,19 @@
 
 import { MAX_IMAGE_SIZE, IMAGE_TYPES, ANIMATED_IMAGE_TYPES, MD_EX_SECTIONS } from "src/constants/constants";
 import { App, Modal, Notice, TFile, WorkspaceLeaf } from "obsidian";
-import { ExcalidrawAutomate } from "src/ExcalidrawAutomate";
-import { REGEX_LINK, REG_LINKINDEX_HYPERLINK, getExcalidrawMarkdownHeaderSection, REGEX_TAGS } from "src/ExcalidrawData";
-import ExcalidrawView from "src/ExcalidrawView";
-import { ExcalidrawElement, ExcalidrawFrameElement } from "@zsviczian/excalidraw/types/excalidraw/element/types";
-import { getEmbeddedFilenameParts, getLinkParts, isImagePartRef } from "./Utils";
-import { cleanSectionHeading } from "./ObsidianUtils";
-import { getEA } from "src";
+import { ExcalidrawAutomate } from "src/shared/ExcalidrawAutomate";
+import { REGEX_LINK, REG_LINKINDEX_HYPERLINK, getExcalidrawMarkdownHeaderSection, REGEX_TAGS } from "../shared/ExcalidrawData";
+import ExcalidrawView from "src/view/ExcalidrawView";
+import { ExcalidrawElement, ExcalidrawFrameElement, ExcalidrawImageElement } from "@zsviczian/excalidraw/types/excalidraw/element/types";
+import { getEmbeddedFilenameParts, getLinkParts, isImagePartRef } from "./utils";
+import { cleanSectionHeading } from "./obsidianUtils";
+import { getEA } from "src/core";
 import { ExcalidrawImperativeAPI } from "@zsviczian/excalidraw/types/excalidraw/types";
-import { EmbeddableMDCustomProps } from "src/dialogs/EmbeddableSettings";
+import { EmbeddableMDCustomProps } from "src/shared/Dialogs/EmbeddableSettings";
 import { nanoid } from "nanoid";
 import { t } from "src/lang/helpers";
+import { Mutable } from "@zsviczian/excalidraw/types/excalidraw/utility-types";
+import { EmbeddedFile } from "src/shared/EmbeddedFileLoader";
 
 export async function insertImageToView(
   ea: ExcalidrawAutomate,
@@ -44,8 +46,21 @@ export async function insertEmbeddableToView (
   shouldInsertToView: boolean = true,
 ):Promise<string> {
   if(shouldInsertToView) {ea.clear();}
-  ea.style.strokeColor = "transparent";
-  ea.style.backgroundColor = "transparent";
+  const api = ea.getExcalidrawAPI() as ExcalidrawImperativeAPI;
+  const st = api.getAppState();
+  
+  if(ea.plugin.settings.embeddableMarkdownDefaults.backgroundMatchElement) {
+    ea.style.backgroundColor = st.currentItemBackgroundColor;
+  } else {
+    ea.style.backgroundColor = "transparent";
+  }
+
+  if(ea.plugin.settings.embeddableMarkdownDefaults.borderMatchElement) {
+    ea.style.strokeColor = st.currentItemStrokeColor;
+  } else {
+    ea.style.strokeColor = "transparent";
+  }
+  
   if(file && (IMAGE_TYPES.contains(file.extension) || ea.isExcalidrawFile(file)) && !ANIMATED_IMAGE_TYPES.contains(file.extension)) {
     return await insertImageToView(ea, position, link??file, undefined, shouldInsertToView);
   } else {
@@ -418,4 +433,35 @@ export function displayFontMessage(app: App) {
   }
 
   modal.open();
+}
+
+export async function toggleImageAnchoring(
+  el: ExcalidrawImageElement,
+  view: ExcalidrawView,
+  shouldAnchor: boolean,
+  ef: EmbeddedFile,
+) {
+  const ea = getEA(view) as ExcalidrawAutomate;
+  let imgEl = view.getViewElements().find((x:ExcalidrawElement)=>x.id === el.id) as Mutable<ExcalidrawImageElement>;
+  if(!imgEl) {
+    ea.destroy();
+    return;
+  }
+  ea.copyViewElementsToEAforEditing([imgEl]);
+  imgEl = ea.getElements()[0] as Mutable<ExcalidrawImageElement>;
+  if(!imgEl.customData) {
+    imgEl.customData = {};
+  }
+  imgEl.customData.isAnchored = shouldAnchor;
+  if(shouldAnchor) {
+    const {height, width} = ef.size;
+    const dX = width - imgEl.width;
+    const dY = height - imgEl.height;
+    imgEl.height = height;
+    imgEl.width = width;
+    imgEl.x -= dX/2;
+    imgEl.y -= dY/2;
+  }
+  await ea.addElementsToView(false, false);
+  ea.destroy();
 }

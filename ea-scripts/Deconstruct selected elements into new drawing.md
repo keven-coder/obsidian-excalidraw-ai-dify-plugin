@@ -9,7 +9,7 @@ Select some elements in the scene. The script will take these elements and move 
 
 ```javascript
 */
-if(!ea.verifyMinimumPluginVersion || !ea.verifyMinimumPluginVersion("2.0.25")) {
+if(!ea.verifyMinimumPluginVersion || !ea.verifyMinimumPluginVersion("2.7.3")) {
   new Notice("This script requires a newer version of Excalidraw. Please install the latest version.");
   return;
 }
@@ -79,15 +79,19 @@ ea.copyViewElementsToEAforEditing(els);
 ea.getElements().filter(el=>el.type==="image").forEach(el=>{
   const img = ea.targetView.excalidrawData.getFile(el.fileId);
   const path = (img?.linkParts?.original)??(img?.file?.path);
-  if(img && path) {
+  const hyperlink = img?.hyperlink;
+  if(img && (path || hyperlink)) {
+	const colorMap = ea.getColorMapForImageElement(el);
     ea.imagesDict[el.fileId] = {
       mimeType: img.mimeType,
       id: el.fileId,
       dataURL: img.img,
       created: img.mtime,
       file: path,
+      hyperlink,
       hasSVGwithBitmap: img.isSVGwithBitmap,
       latex: null,
+      colorMap,
     };
     return;
   }

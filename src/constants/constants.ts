@@ -1,8 +1,8 @@
 import { customAlphabet } from "nanoid";
-import { DeviceType } from "../types/types";
-import { ExcalidrawLib } from "../ExcalidrawLib";
+import { ExcalidrawLib } from "../types/excalidrawLib";
 import { moment } from "obsidian";
-import ExcalidrawPlugin from "src/main";
+import ExcalidrawPlugin from "src/core/main";
+import { DeviceType } from "src/types/types";
 //This is only for backward compatibility because an early version of obsidian included an encoding to avoid fantom links from littering Obsidian graph view
 declare const PLUGIN_VERSION:string;
 export let EXCALIDRAW_PLUGIN: ExcalidrawPlugin = null;
@@ -26,7 +26,8 @@ export const ERROR_IFRAME_CONVERSION_CANCELED = "iframe conversion canceled";
 
 declare const excalidrawLib: typeof ExcalidrawLib;
 
-export const LOCALE = moment.locale();
+export const LOCALE = localStorage.getItem("language")?.toLowerCase() || "en";
+export const CJK_FONTS = "CJK Fonts";
 
 export const obsidianToExcalidrawMap: { [key: string]: string } = {
   'en': 'en-US',
@@ -104,6 +105,7 @@ export let {
   refreshTextDimensions,
   getCSSFontDefinition,
   loadSceneFonts,
+  loadMermaid,
 } = excalidrawLib;
 
 export function updateExcalidrawLib() {
@@ -129,6 +131,7 @@ export function updateExcalidrawLib() {
     refreshTextDimensions,
     getCSSFontDefinition,
     loadSceneFonts,
+    loadMermaid,
   } = excalidrawLib);
 }
 
@@ -152,7 +155,12 @@ export const DEVICE: DeviceType = {
   isAndroid: document.body.hasClass("is-android"),
 };
 
-export const ROOTELEMENTSIZE = (() => {
+export let ROOTELEMENTSIZE: number = 16;
+export function setRootElementSize(size?:number) {
+  if(size) {
+    ROOTELEMENTSIZE = size;
+    return;
+  }
   const tempElement = document.createElement('div');
   tempElement.style.fontSize = '1rem';
   tempElement.style.display = 'none'; // Hide the element
@@ -161,7 +169,7 @@ export const ROOTELEMENTSIZE = (() => {
   const pixelSize = parseFloat(computedStyle.fontSize);
   document.body.removeChild(tempElement);
   return pixelSize;
-})();
+};
 
 export const nanoid = customAlphabet(
   "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
@@ -190,10 +198,14 @@ export const REG_BLOCK_REF_CLEAN = /[!"#$%&()*+,.:;<=>?@^`{|}~\/\[\]\\\r\n]/g;
 //                                 /[!"#$%&()*+,.:;<=>?@^`{|}~\/\[\]\\]/g; 
 // https://discord.com/channels/686053708261228577/989603365606531104/1000128926619816048
 // /\+|\/|~|=|%|\(|\)|{|}|,|&|\.|\$|!|\?|;|\[|]|\^|#|\*|<|>|&|@|\||\\|"|:|\s/g;
-export const IMAGE_TYPES = ["jpeg", "jpg", "png", "gif", "svg", "webp", "bmp", "ico", "jtif", "tif"];
+export const IMAGE_TYPES = ["jpeg", "jpg", "png", "gif", "svg", "webp", "bmp", "ico", "jtif", "tif", "jfif", "avif"];
 export const ANIMATED_IMAGE_TYPES = ["gif", "webp", "apng", "svg"];
 export const EXPORT_TYPES = ["svg", "dark.svg", "light.svg", "png", "dark.png", "light.png"];
 export const MAX_IMAGE_SIZE = 500;
+
+export const VIDEO_TYPES = ["mp4", "webm", "ogv", "mov", "mkv"];
+export const AUDIO_TYPES = ["mp3", "wav", "m4a", "3gp", "flac", "ogg", "oga", "opus"];
+export const CODE_TYPES = ["json", "css", "js"];
 
 export const FRONTMATTER_KEYS:{[key:string]: {name: string, type: string, depricated?:boolean}} = {
   "plugin": {name: "excalidraw-plugin", type: "text"},

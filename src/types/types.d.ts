@@ -1,5 +1,6 @@
-import { ExcalidrawAutomate } from "../ExcalidrawAutomate";
-import { ExcalidrawLib } from "../ExcalidrawLib";
+import { TFile } from "obsidian";
+import { ExcalidrawAutomate } from "../shared/ExcalidrawAutomate";
+import { ExcalidrawLib } from "./excalidrawLib";
 
 export type ConnectionPoint = "top" | "bottom" | "left" | "right" | null;
 
@@ -33,10 +34,23 @@ export type DeviceType = {
 
 export type Point = [number, number];
 
+export type LinkSuggestion = {
+  file: TFile;
+  path: string;
+  alias?: string;
+}
+
 declare global {
   interface Window {
       ExcalidrawAutomate: ExcalidrawAutomate;
       pdfjsLib: any;
+      eval: (x: string) => any;
+      React?: any;
+      ReactDOM?: any;
+      ExcalidrawLib?: any;
+  }
+  interface File {
+    path?: string;
   }
 }
 
@@ -48,12 +62,40 @@ declare module "obsidian" {
     metadataTypeManager: {
       setType(name:string, type:string): void;
     };
+    plugins: {
+      plugins: {
+        [key: string]: Plugin | undefined;
+      };
+    };
+  }
+  interface FileManager {
+    promptForFileRename(file: TFile): Promise<void>;
+  }
+  interface FileView {
+    _loaded: boolean;
+    headerEl: HTMLElement;
+  }
+  interface TextFileView {
+    lastSavedData: string;
+  }
+  interface Menu {
+    items: MenuItem[];
   }
   interface Keymap {
     getRootScope(): Scope;
   }
   interface Scope {
     keys: any[];
+  }
+  interface WorkspaceLeaf {
+    id: string;
+    containerEl: HTMLDivElement;
+    tabHeaderInnerTitleEl: HTMLDivElement;
+    tabHeaderInnerIconEl: HTMLDivElement;
+  }
+  interface WorkspaceWindowInitData {
+    x?: number;
+    y?: number;
   }
   interface Workspace {
     on(
@@ -88,5 +130,15 @@ declare module "obsidian" {
   interface MetadataCache {
     getBacklinksForFile(file: TFile): any;
     getLinks(): { [id: string]: Array<{ link: string; displayText: string; original: string; position: any }> };
+    getCachedFiles(): string[];
+  }
+
+  interface HoverPopover {
+    containerEl: HTMLElement;
+    hide(): void;
+  }
+
+  interface Plugin {
+    _loaded: boolean;
   }
 }

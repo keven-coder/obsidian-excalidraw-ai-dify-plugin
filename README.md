@@ -1,51 +1,55 @@
 # Obsidian-excalidraw-ai-dify-plugin
 
-AI functionality can be implemented using the DifyAPI.
-
-[中文](./README_CN.md)
-[RAW README](./README-RAW.md)
+可以使用DifyAPI来实现AI功能
 
 
-## Packaging
-1. Node.js >18
-2. Run `yarn install`
-3. Run `yarn build`
-4. Install the `Excalidraw` plugin in Obsidian
-5. Copy the files from the `dist/*` directory and replace the corresponding files in the plugin directory `.obsidian\plugins\obsidian-excalidraw-plugin\`
-6. Restart Obsidian
+[原README](./README-RAW.md)
 
-## Configuration
-1. Open Obsidian settings, and you will see DifyAPIURL and other options:
-   - **DifyAPIURL**: The API URL of Dify, can be a locally deployed address.
-   - **ToDiaramsAPIKey**: The token for configuring the workflow that converts to Mermaid.
-   - **ToCodeAPIKey**: The token for configuring the workflow that converts to code (reserved, feature not implemented).
-   - **ToDesignAPIKey**: The token for configuring the workflow that converts to design (reserved, feature not implemented).
+- Obsidian版本: 1.8.7
+
+## 打包
+1. node >18
+2. yarn install 
+3. yarn build
+4. Obsidian安装插件 `Excalidraw`
+5. 将打包后dist/* 下文件, 拷贝替换插件目录下的文件 `.obsidian\plugins\obsidian-excalidraw-plugin\`
+6. 重启Obsidian
+
+## 配置
+1. 打开Obsidian设置, 可以看到 DifyAPIURL 和 其他几个选项
+- DifyAPIURL: dify api地址, 可以是本地部署的地址
+- ToDiaramsAPIKey: 就是配置转换为Mermaid的工作流的token
+- ToCodeAPIKey: 就是配置转换为代码的工作流的token (预留,未实现功能)
+- ToDesignAPIKey: 就是配置转换为设计类的工作流的token (预留,未实现功能)
+
 ![](./docs/DifyApi/1.png)
 
-2. In Dify, configure a simple workflow, choose a suitable model, and input a system prompt, such as: "Return only content in Mermaid-supported format, without any additional content."
+
+2. Dify中配置简单的工作流，选择觉得合适的模型, 输入System提示词, 比如: "仅返回Mermaid支持的格式内容，不要包含任何其他内容"
 ![](./docs/DifyApi/difyFlow.png)
 
+3. 之后, 点击Dify中的访问API, 可以看到基础URL, 就是DifyAPIURL, 但是要去掉"v1";  设置API密钥, 就得到了 ToDiaramsAPIKey
 
-3. Then, click "Access API" in Dify to see the base URL, which is the DifyAPIURL, but without the "v1" part. Set the API key to obtain the **ToDiaramsAPIKey**.
 ![](./docs/DifyApi/difyConfig.png)
 
-## Usage
-Click the **AI-Text to Diagram** feature and start using it!
+## 使用
+点击 AI-Text to diagram功能, 愉快的使用吧
+
+- 示例: 
+```
+根据内容分析并形成流程图
+1. 输入用户名-密码
+2. 验证输入格式
+3. 查询用户信息
+4. 比对密码
+5. 生成身份令牌
+6. 存储令牌-Session
+7. 跳转至主页面
+8. 登录失败提示
+9. 会话过期-退出登录
+```
+
 
 ![](./docs/DifyApi/use1.png)
 ![](./docs/DifyApi/use2.png)
 
-
-- Example:
-```
-Analyze the content and generate a flowchart:
-1. Input username-password
-2. Validate input format
-3. Query user information
-4. Compare passwords
-5. Generate authentication token
-6. Store token-Session
-7. Redirect to main page
-8. Login failure message
-9. Session expired-logout
-```

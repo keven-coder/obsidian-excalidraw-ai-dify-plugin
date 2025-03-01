@@ -1,8 +1,8 @@
 import { ExcalidrawEmbeddableElement, ExcalidrawFrameElement, ExcalidrawImageElement } from "@zsviczian/excalidraw/types/excalidraw/element/types";
 import { Mutable } from "@zsviczian/excalidraw/types/excalidraw/utility-types";
-import { getEA } from "src";
-import { ExcalidrawAutomate } from "src/ExcalidrawAutomate";
-import { getCropFileNameAndFolder, getListOfTemplateFiles, splitFolderAndFilename } from "./FileUtils";
+import { getEA } from "src/core";
+import { ExcalidrawAutomate } from "src/shared/ExcalidrawAutomate";
+import { getCropFileNameAndFolder, getListOfTemplateFiles, splitFolderAndFilename } from "./fileUtils";
 import { Notice, TFile } from "obsidian";
 import { Radians } from "@zsviczian/excalidraw/types/math";
 

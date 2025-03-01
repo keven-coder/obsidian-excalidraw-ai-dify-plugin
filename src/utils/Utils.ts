@@ -17,21 +17,22 @@ import {
   DEVICE,
   getContainerElement,
 } from "../constants/constants";
-import ExcalidrawPlugin from "../main";
-import { ExcalidrawElement, ExcalidrawTextElement, ImageCrop } from "@zsviczian/excalidraw/types/excalidraw/element/types";
-import { ExportSettings } from "../ExcalidrawView";
-import { getDataURLFromURL, getIMGFilename, getMimeType, getURLImageExtension } from "./FileUtils";
-import { generateEmbeddableLink } from "./CustomEmbeddableUtils";
-import { FILENAMEPARTS } from "./UtilTypes";
+import ExcalidrawPlugin from "../core/main";
+import { ExcalidrawElement, ExcalidrawImageElement, ExcalidrawTextElement, ImageCrop } from "@zsviczian/excalidraw/types/excalidraw/element/types";
+import { ExportSettings } from "../view/ExcalidrawView";
+import { getDataURLFromURL, getIMGFilename, getMimeType, getURLImageExtension } from "./fileUtils";
+import { generateEmbeddableLink } from "./customEmbeddableUtils";
+import { FILENAMEPARTS } from "../types/utilTypes";
 import { Mutable } from "@zsviczian/excalidraw/types/excalidraw/utility-types";
-import { cleanBlockRef, cleanSectionHeading, getFileCSSClasses } from "./ObsidianUtils";
-import { updateElementLinksToObsidianLinks } from "src/ExcalidrawAutomate";
-import { CropImage } from "./CropImage";
+import { cleanBlockRef, cleanSectionHeading, getFileCSSClasses } from "./obsidianUtils";
+import { updateElementLinksToObsidianLinks } from "./excalidrawAutomateUtils";
+import { CropImage } from "../shared/CropImage";
 import opentype from 'opentype.js';
-import { runCompressionWorker } from "src/workers/compression-worker";
+import { runCompressionWorker } from "src/shared/Workers/compression-worker";
 import Pool from "es6-promise-pool";
-import { FileData } from "src/EmbeddedFileLoader";
+import { FileData } from "../shared/EmbeddedFileLoader";
 import { t } from "src/lang/helpers";
+import ExcalidrawScene from "src/shared/svgToExcalidraw/elements/ExcalidrawScene";
 
 declare const PLUGIN_VERSION:string;
 declare var LZString: any;
@@ -230,11 +231,17 @@ export function base64StringToBlob (base64String: string, mimeType: string): Blo
   return new Blob([buffer], { type: mimeType });
 };
 
-export function svgToBase64 (svg: string): string {
-  return `data:image/svg+xml;base64,${btoa(
-    unescape(encodeURIComponent(svg.replaceAll("&nbsp;", " "))),
-  )}`;
-};
+export function svgToBase64(svg: string): string {
+  const cleanSvg = svg.replaceAll("&nbsp;", " ");
+  
+  // Convert the string to UTF-8 and handle non-Latin1 characters
+  const encodedData = encodeURIComponent(cleanSvg)
+    .replace(/%([0-9A-F]{2})/g,
+      (match, p1) => String.fromCharCode(parseInt(p1, 16))
+    );
+    
+  return `data:image/svg+xml;base64,${btoa(encodedData)}`;
+}
 
 export async function getBinaryFileFromDataURL (dataURL: string): Promise<ArrayBuffer> {
   if (!dataURL) {
@@ -300,7 +307,7 @@ export async function getSVG (
           : {},
         },
         files: scene.files,
-        exportPadding: exportSettings.frameRendering ? 0 : padding,
+        exportPadding: exportSettings.frameRendering?.enabled ? 0 : padding,
         exportingFrame: null,
         renderEmbeddables: true,
         skipInliningFonts: exportSettings.skipInliningFonts,
@@ -358,7 +365,7 @@ export async function getPNG (
         : {},
       },
       files: filterFiles(scene.files),
-      exportPadding: exportSettings.frameRendering ? 0 : padding,
+      exportPadding: exportSettings.frameRendering?.enabled ? 0 : padding,
       mimeType: "image/png",
       getDimensions: (width: number, height: number) => ({
         width: width * scale,
@@ -409,11 +416,17 @@ export async function getImageSize (
   });
 };
 
-export function addAppendUpdateCustomData (el: Mutable<ExcalidrawElement>, newData: any): ExcalidrawElement {
+export function addAppendUpdateCustomData (
+  el: Mutable<ExcalidrawElement>,
+  newData: Partial<Record<string, unknown>>
+): ExcalidrawElement {
   if(!newData) return el;
   if(!el.customData) el.customData = {};
   for (const key in newData) {
-    if(typeof newData[key] === "undefined") continue;
+    if(typeof newData[key] === "undefined") {
+      delete el.customData[key];
+      continue;
+    }
     el.customData[key] = newData[key];
   }
   return el;
@@ -441,7 +454,7 @@ export function scaleLoadedImage (
 
     scene.elements
       .filter((e: any) => e.type === "image" && e.fileId === img.id)
-      .forEach((el: any) => {
+      .forEach((el: Mutable<ExcalidrawImageElement>) => {
         const [elWidth, elHeight] = [el.width, el.height];
         const maintainArea = img.shouldScale; //true if image should maintain its area, false if image should display at 100% its size
         const elCrop: ImageCrop = el.crop;
@@ -533,7 +546,7 @@ export function setDocLeftHandedMode(isLeftHanded: boolean, ownerDocument:Docume
 
 export function setLeftHandedMode (isLeftHanded: boolean) {
   const visitedDocs = new Set<Document>();
-  app.workspace.iterateAllLeaves((leaf) => {
+  EXCALIDRAW_PLUGIN.app.workspace.iterateAllLeaves((leaf) => {
     const ownerDocument = DEVICE.isMobile?document:leaf.view.containerEl.ownerDocument;
     if(!ownerDocument) return;
     if(visitedDocs.has(ownerDocument)) return;

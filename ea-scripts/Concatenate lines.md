@@ -8,20 +8,76 @@ if(lines.length !== 2) {
   return;
 }
 
-// https://math.stackexchange.com/questions/2204520/how-do-i-rotate-a-line-segment-in-a-specific-point-on-the-line
-const rotate = (point, element) => {
-  const [x1, y1] = point;
-  const x2 = element.x + element.width/2;
-  const y2 = element.y - element.height/2;
-  const angle = element.angle;
-  return [
-    (x1 - x2) * Math.cos(angle) - (y1 - y2) * Math.sin(angle) + x2,
-    (x1 - x2) * Math.sin(angle) + (y1 - y2) * Math.cos(angle) + y2,
-  ];
+//Same line but with angle=0
+function getNormalizedLine(originalElement) {
+  if(originalElement.angle === 0) return originalElement;
+
+  // Get absolute coordinates for all points first
+  const pointRotateRads = (point, center, angle) => {
+    const [x, y] = point;
+    const [cx, cy] = center;
+    return [
+      (x - cx) * Math.cos(angle) - (y - cy) * Math.sin(angle) + cx,
+      (x - cx) * Math.sin(angle) + (y - cy) * Math.cos(angle) + cy
+    ];
+  };
+  
+  // Get element absolute coordinates (matching Excalidraw's approach)
+  const getElementAbsoluteCoords = (element) => {
+    const points = element.points;
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+  
+    for (const [x, y] of points) {
+      const absX = x + element.x;
+      const absY = y + element.y;
+      minX = Math.min(minX, absX);
+      minY = Math.min(minY, absY);
+      maxX = Math.max(maxX, absX);
+      maxY = Math.max(maxY, absY);
+    }
+  
+    return [minX, minY, maxX, maxY];
+  };
+  
+  // Calculate center point based on absolute coordinates
+  const [x1, y1, x2, y2] = getElementAbsoluteCoords(originalElement);
+  const centerX = (x1 + x2) / 2;
+  const centerY = (y1 + y2) / 2;
+  
+  // Calculate absolute coordinates of all points
+  const absolutePoints = originalElement.points.map(([x, y]) => [
+    x + originalElement.x,
+    y + originalElement.y
+  ]);
+  
+  // Rotate all points around the center
+  const rotatedPoints = absolutePoints.map(point => 
+    pointRotateRads(point, [centerX, centerY], originalElement.angle)
+  );
+  
+  // Convert back to relative coordinates
+  const newPoints = rotatedPoints.map(([x, y]) => [
+    x - rotatedPoints[0][0],
+    y - rotatedPoints[0][1]
+  ]);
+  
+  const newLineId = ea.addLine(newPoints);
+  
+  // Set the position of the new line to the first rotated point
+  const newLine = ea.getElement(newLineId);
+  newLine.x = rotatedPoints[0][0];
+  newLine.y = rotatedPoints[0][1];
+  newLine.angle = 0;
+  delete ea.elementsDict[newLine.id];
+  return newLine;
 }
 
-const points = lines.map(
-  el=>el.points.map(p=>rotate([p[0]+el.x, p[1]+el.y],el))
+
+const points = lines.map(getNormalizedLine).map(
+  el=>el.points.map(p=>[p[0]+el.x, p[1]+el.y])
 );
 
 const last = (p) => p[p.length-1];
@@ -99,4 +155,4 @@ switch (lineTypes) {
 }
 
 
-ea.addElementsToView();
+await ea.addElementsToView();

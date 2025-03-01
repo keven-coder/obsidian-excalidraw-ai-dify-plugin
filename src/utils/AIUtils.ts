@@ -1,6 +1,5 @@
-import { DEVICE } from "../constants/constants";
-import { Notice, RequestUrlResponse, requestUrl } from "obsidian";
-import ExcalidrawPlugin from "src/main";
+import { Notice, RequestUrlResponse } from "obsidian";
+import ExcalidrawPlugin from "src/core/main";
 
 type MessageContent =
   | string
@@ -228,7 +227,6 @@ export const postOpenAI = async (request: AIRequest) : Promise<RequestUrlRespons
 
 }
 
-
 export const postTtdAI = async (request: AIRequest): Promise<any> => {
   const plugin: ExcalidrawPlugin = window.ExcalidrawAutomate.plugin;
   const { aiApiURL, aiTtdToken } = plugin.settings;
@@ -255,6 +253,8 @@ export const postTtdAI = async (request: AIRequest): Promise<any> => {
     },
   );
 }
+
+
 
 /**
  * Grabs the codeblock contents from the supplied markdown string.

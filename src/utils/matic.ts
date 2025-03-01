@@ -2,6 +2,7 @@ import { THEME } from "../constants/constants";
 import type { Theme } from "@zsviczian/excalidraw/types/excalidraw/element/types";
 import type { DataURL } from "@zsviczian/excalidraw/types/excalidraw/types";
 import type { OpenAIInput, OpenAIOutput } from "@zsviczian/excalidraw/types/excalidraw/data/ai/types";
+import ExcalidrawPlugin from "src/core/main";
 
 export type MagicCacheData =
   | {
@@ -88,3 +89,50 @@ export async function diagramToHTML({
     body: JSON.stringify(body),
   });
 }
+
+export const diagramToHTMLByDify = async (
+  {
+    image,
+    text,
+    theme = THEME.LIGHT,
+  }: {
+    image: DataURL;
+    text: string;
+    theme?: Theme;
+  }
+): Promise<any> => {
+  const plugin: ExcalidrawPlugin = window.ExcalidrawAutomate.plugin;
+  const { aiApiURL, aiToCodeToken } = plugin.settings;
+
+  const prompt = `Above is the reference wireframe. Please make a new website based on these and return just the HTML file. Also, please make it for the ${theme} theme. What follows are the wireframe's text annotations (if any)...`;
+
+  // 构造 Dify 的请求体
+  const body = {
+    inputs: {}, // 如果需要传递额外参数，可以在这里添加
+    query: prompt + ":" + text, // 用户输入的文本
+    response_mode: "blocking", // 同步模式（或 "streaming" 流式模式）
+    conversation_id: "", // 如果需要继续某个对话，可以传入 conversation_id
+    user: "alcboard", // 用户标识
+    files: [
+      {
+        type: "image", // 文件类型
+        transfer_method: "remote_url", // 文件传输方式
+        url: image, // 图片 URL
+      },
+    ],
+  };
+
+  return await fetch(
+    `${aiApiURL}/v1/chat-messages`, // Dify 的 API 端点
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${aiToCodeToken}`, // 使用 Dify 的 Token
+      },
+      body: JSON.stringify(body),
+    }
+  );
+
+
+};

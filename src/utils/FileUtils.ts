@@ -1,12 +1,12 @@
 import { DataURL } from "@zsviczian/excalidraw/types/excalidraw/types";
 import { App, loadPdfJs, normalizePath, Notice, requestUrl, RequestUrlResponse, TAbstractFile, TFile, TFolder, Vault } from "obsidian";
-import { DEVICE, FRONTMATTER_KEYS, URLFETCHTIMEOUT } from "src/constants/constants";
-import { IMAGE_MIME_TYPES, MimeType } from "src/EmbeddedFileLoader";
-import { ExcalidrawSettings } from "src/settings";
-import { errorlog, getDataURL } from "./Utils";
-import ExcalidrawPlugin from "src/main";
-import { ANNOTATED_PREFIX, CROPPED_PREFIX } from "./CarveOut";
-import { getAttachmentsFolderAndFilePath } from "./ObsidianUtils";
+import { DEVICE, EXCALIDRAW_PLUGIN, FRONTMATTER_KEYS, URLFETCHTIMEOUT } from "src/constants/constants";
+import { IMAGE_MIME_TYPES, MimeType } from "../shared/EmbeddedFileLoader";
+import { ExcalidrawSettings } from "src/core/settings";
+import { errorlog, getDataURL } from "./utils";
+import ExcalidrawPlugin from "src/core/main";
+import { ANNOTATED_PREFIX, CROPPED_PREFIX } from "./carveout";
+import { getAttachmentsFolderAndFilePath } from "./obsidianUtils";
 
 /**
  * Splits a full path including a folderpath and a filename into separate folderpath and filename components
@@ -142,7 +142,7 @@ export function getEmbedFilename(
  * @param folderpath
  */
 export async function checkAndCreateFolder(folderpath: string):Promise<TFolder> {
-  const vault = app.vault;
+  const vault = EXCALIDRAW_PLUGIN.app.vault;
   folderpath = normalizePath(folderpath);
   //https://github.com/zsviczian/obsidian-excalidraw-plugin/issues/658
   //@ts-ignore
@@ -290,9 +290,20 @@ export const blobToBase64 = async (blob: Blob): Promise<string> => {
   return btoa(binary);
 }
 
+export const arrayBufferToBase64 = (arrayBuffer: ArrayBuffer): string => {
+  const bytes = new Uint8Array(arrayBuffer);
+  let binary = '';
+  
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+
+  return btoa(binary);
+};
+
 export const getPDFDoc = async (f: TFile): Promise<any> => {
   if(typeof window.pdfjsLib === "undefined") await loadPdfJs();
-  return await window.pdfjsLib.getDocument(app.vault.getResourcePath(f)).promise;
+  return await window.pdfjsLib.getDocument(EXCALIDRAW_PLUGIN.app.vault.getResourcePath(f)).promise;
 }
 
 export const readLocalFile = async (filePath:string): Promise<string> => {
@@ -330,9 +341,14 @@ export const getPathWithoutExtension = (f:TFile): string => {
   return f.path.substring(0, f.path.lastIndexOf("."));
 }
 
-const VAULT_BASE_URL = DEVICE.isDesktop
-  ? app.vault.adapter.url.pathToFileURL(app.vault.adapter.basePath).toString()
+let _VAULT_BASE_URL:string = null;
+const VAULT_BASE_URL = () => {
+  if(_VAULT_BASE_URL) return _VAULT_BASE_URL;
+  _VAULT_BASE_URL = DEVICE.isDesktop
+  ? EXCALIDRAW_PLUGIN.app.vault.adapter.url.pathToFileURL(EXCALIDRAW_PLUGIN.app.vault.adapter.basePath).toString()
   : "";
+  return _VAULT_BASE_URL;
+}
 
 export const getInternalLinkOrFileURLLink = (
   path: string, plugin:ExcalidrawPlugin, alias?: string, sourceFile?: TFile
@@ -344,8 +360,10 @@ export const getInternalLinkOrFileURLLink = (
   }
   const vault = plugin.app.vault;
   const fileURLString = vault.adapter.url.pathToFileURL(path).toString();
-  if (fileURLString.startsWith(VAULT_BASE_URL)) {
-    const internalPath = normalizePath(unescape(fileURLString.substring(VAULT_BASE_URL.length)));
+  if (fileURLString.startsWith(VAULT_BASE_URL())) {
+    const internalPath = normalizePath(
+      decodeURIComponent(fileURLString.substring(VAULT_BASE_URL().length))
+    );
     const file = vault.getAbstractFileByPath(internalPath);
     if(file && file instanceof TFile) {
       const link = plugin.app.metadataCache.fileToLinktext(
@@ -474,4 +492,23 @@ export const getExcalidrawEmbeddedFilesFiletree = (sourceFile: TFile, plugin: Ex
 export const hasExcalidrawEmbeddedImagesTreeChanged = (sourceFile: TFile, mtime:number, plugin: ExcalidrawPlugin):boolean => {
   const fileList = getExcalidrawEmbeddedFilesFiletree(sourceFile, plugin);
   return fileList.some(f=>f.stat.mtime > mtime);
+}
+
+export async function createOrOverwriteFile(app: App, path: string, content: string | ArrayBuffer): Promise<TFile> {
+  const file = app.vault.getAbstractFileByPath(normalizePath(path));
+  if(content instanceof ArrayBuffer) {
+    if(file && file instanceof TFile) {
+      await app.vault.modifyBinary(file, content);
+      return file;
+    } else {
+      return await app.vault.createBinary(path, content);
+    }
+  }
+
+  if (file && file instanceof TFile) {
+    await app.vault.modify(file, content);
+    return file;
+  } else {
+    return await app.vault.create(path, content);
+  }
 }
